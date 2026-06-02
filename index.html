@@ -126,9 +126,7 @@
   <div id="app" aria-live="polite"></div>
 
   <footer class="app">
-    <div>このアプリはインターネットに接続せず端末内で動作します（オフライン対応）。</div>
-    <div style="margin-top:4px;">個人情報は一切取得・送信しません。</div>
-    <div style="margin-top:6px;"><button class="link" data-action="admin">スタッフ用 集計画面</button></div>
+    <div>個人情報は一切取得・送信しません。</div>
   </footer>
 </div>
 
@@ -151,12 +149,12 @@ const CONFIG = {
 
   // 結果画面でご案内する講習・来場情報（日時会場は適宜書き換えてください）
   cta: {
-    title: "📣 もっと安心・便利に！次の一歩のご案内",
+    title: "📣 もっと長野地域のデジタルを安全に！我々の学校はスマートライフを安全に学ぶための学校です‼️",
     items: [
-      "「デジタル安全運転」講習 … ネット詐欺・パスワード・スマホの守り方を学べます",
+      "「デジタル安全運転」講習 … ネット詐欺・パスワード・どうやったら安全・安心にこのデジタル化社会を歩めるかを学問を通じて学び合えます‼️",
       "「生成AI 安全活用」講習 … AIを安心して暮らしや仕事に活かすコツを学べます",
-      "詳しい日時・お申し込みはブースのスタッフまでお気軽に！",
-      "店舗・施設へのご来場も歓迎です 😊"
+      "詳しい日時・お申し込みはブースのプランナーまでお気軽に😊",
+      "残り枠も少ないのでお早めに‼️"
     ]
   },
 
@@ -483,7 +481,7 @@ function renderResult(){
         <div class="lab">${isTop?"おめでとうございます！上位賞":"ご参加賞"}</div>
         <div class="name">${esc(prizeName)}</div>
       </div>
-      <div class="staff">▲ この画面をブースのスタッフにお見せください（景品とお引換え）</div>
+      <div class="staff">▲ この画面をブースのプランナーにお見せください（景品とお引換え）</div>
     </div>
     <div class="card">
       <div class="cta">
@@ -534,7 +532,7 @@ function finish(){
 }
 
 /* ============================================================
-   集計（スタッフ用）
+   集計（プランナー用）
    ============================================================ */
 function aggregate(data){
   const out={total:data.length, bySet:{}, perQ:{}, scoreDist:{}, prize:{top:0,part:0}, byDevice:{}};
@@ -562,7 +560,7 @@ function renderAdmin(){
   if(CONFIG.adminPin){
     const ok=sessionStorage.getItem(CONFIG.storeKey+"_pinok");
     if(!ok){
-      const v=prompt("スタッフ用PINを入力してください");
+      const v=prompt("プランナー用PINを入力してください");
       if(v!==CONFIG.adminPin){ alert("PINが違います"); location.hash=""; goHome(); return; }
       sessionStorage.setItem(CONFIG.storeKey+"_pinok","1");
     }
@@ -599,7 +597,7 @@ function renderAdmin(){
 
   app.innerHTML = `
     <div class="card admin">
-      <div class="topbar"><h2>📊 集計（スタッフ用）</h2><button class="btn ghost" style="width:auto;padding:8px 14px;font-size:14px;" data-action="home">クイズへ戻る</button></div>
+      <div class="topbar"><h2>📊 集計（プランナー用）</h2><button class="btn ghost" style="width:auto;padding:8px 14px;font-size:14px;" data-action="home">クイズへ戻る</button></div>
       ${adminMerged?`<div class="banner">📥 取り込み合算データを表示中（合計 ${data.length}件）。この端末の保存データには影響しません。<button class="link" data-action="resetMerge" style="margin-left:6px;">この端末のみに戻す</button></div>`:""}
       <div class="kpis">
         <div class="kpi"><div class="v">${ag.total}</div><div class="k">回答 合計件数</div></div>
@@ -739,11 +737,6 @@ app.addEventListener("click", e=>{
     case "flushNow": flushQueue(); alert("未送信データの再送信を試みました。数秒後に『未送信(退避)』件数をご確認ください。"); setTimeout(render, 1200); break;
     case "clearData": if(confirm("この端末の回答データをすべて消去します。よろしいですか？")){ saveAll([]); adminMerged=null; alert("消去しました"); render(); } break;
   }
-});
-// フッターの「スタッフ用 集計画面」リンク（#app の外）
-document.addEventListener("click", e=>{
-  const t=e.target.closest('[data-action="admin"]');
-  if(t && !app.contains(t)){ location.hash="#admin"; }
 });
 document.getElementById("importFile").addEventListener("change", e=>{ importJson(e.target.files); e.target.value=""; });
 window.addEventListener("hashchange", render);
