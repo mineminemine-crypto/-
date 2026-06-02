@@ -1,0 +1,15 @@
+{
+  "name": "大人の文化祭2026 デジタル安心クイズ",
+  "short_name": "安心クイズ",
+  "description": "デジタル安全運行と生成AI安全活用のクイズ。オフライン対応・個人情報なし。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6fb",
+  "theme_color": "#1f6feb",
+  "lang": "ja",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

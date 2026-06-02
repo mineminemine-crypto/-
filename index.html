@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1f6feb" />
+<title>大人の文化祭2026 デジタル安心クイズ</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<style>
+  :root{
+    --blue:#1f6feb; --blue-d:#1648b0; --green:#16a34a; --green-d:#0f7a36;
+    --purple:#7c3aed; --purple-d:#5b21b6; --red:#dc2626; --amber:#f59e0b;
+    --ink:#1f2430; --muted:#64748b; --line:#e6e9f0; --bg:#f3f6fb; --card:#ffffff;
+    --ok-bg:#e7f8ee; --ng-bg:#fdeaea;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.6;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:540px; margin:0 auto; padding:0 16px 40px; min-height:100vh; display:flex; flex-direction:column;}
+  header.app{
+    background:linear-gradient(135deg,var(--blue),#3b82f6); color:#fff;
+    border-radius:0 0 22px 22px; padding:18px 18px 16px; margin:0 -16px 18px;
+    box-shadow:0 6px 18px rgba(31,111,235,.25);
+  }
+  header.app .ev{font-size:12px; opacity:.9; letter-spacing:.04em;}
+  header.app h1{font-size:19px; margin:2px 0 0; font-weight:800; letter-spacing:.01em;}
+  header.app .sub{font-size:12.5px; opacity:.95; margin-top:4px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px; box-shadow:0 2px 10px rgba(20,40,80,.04); margin-bottom:14px;}
+  h2{font-size:18px; margin:2px 0 10px; font-weight:800;}
+  p.lead{color:var(--muted); font-size:14px; margin:0 0 14px;}
+  .btn{
+    display:flex; align-items:center; gap:10px; width:100%; border:none; cursor:pointer;
+    font-family:inherit; font-size:16px; font-weight:700; color:#fff; background:var(--blue);
+    padding:15px 16px; border-radius:14px; text-align:left; transition:transform .05s ease, filter .15s ease;
+  }
+  .btn:active{transform:scale(.985);}
+  .btn.lg{font-size:17px; padding:17px;}
+  .btn.green{background:var(--green);} .btn.purple{background:var(--purple);}
+  .btn.ghost{background:#eef2f9; color:var(--ink); font-weight:700; border:1px solid var(--line);}
+  .btn.amber{background:var(--amber); color:#3a2a00;}
+  .btn .emj{font-size:22px; line-height:1;}
+  .btn .meta{font-size:12px; font-weight:600; opacity:.92; display:block; margin-top:2px;}
+  .btn .col{display:flex; flex-direction:column;}
+  .row{display:flex; gap:10px;}
+  .row .btn{flex:1;}
+  .pill{display:inline-block; font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px; background:#eef2f9; color:var(--muted);}
+  .pill.safety{background:#e8f0ff; color:var(--blue-d);}
+  .pill.ai{background:#f1e9ff; color:var(--purple-d);}
+  .pill.kids{background:#e7f8ee; color:var(--green-d);}
+  .pill.normal{background:#e8f0ff; color:var(--blue-d);}
+  .pill.hard{background:#f1e9ff; color:var(--purple-d);}
+  .note{font-size:12px; color:var(--muted); background:#f6f8fc; border:1px dashed var(--line); border-radius:12px; padding:10px 12px;}
+  .progress{height:9px; background:#e8edf6; border-radius:999px; overflow:hidden; margin:4px 0 14px;}
+  .progress > i{display:block; height:100%; background:linear-gradient(90deg,var(--blue),#5b9bff); border-radius:999px; transition:width .25s ease;}
+  .qhead{display:flex; justify-content:space-between; align-items:center; font-size:12.5px; color:var(--muted); margin-bottom:6px;}
+  .qtext{font-size:18px; font-weight:800; margin:2px 0 14px; line-height:1.5;}
+  .choice{
+    width:100%; text-align:left; background:#fff; border:2px solid var(--line); color:var(--ink);
+    font-family:inherit; font-size:15.5px; font-weight:600; padding:14px 14px; border-radius:13px;
+    margin-bottom:10px; cursor:pointer; display:flex; gap:10px; align-items:flex-start; line-height:1.45;
+  }
+  .choice:active{transform:scale(.99);}
+  .choice .mk{flex:0 0 26px; height:26px; border-radius:50%; background:#eef2f9; color:var(--muted); font-weight:800; display:flex; align-items:center; justify-content:center; font-size:14px;}
+  .choice.ok{border-color:var(--green); background:var(--ok-bg);}
+  .choice.ok .mk{background:var(--green); color:#fff;}
+  .choice.ng{border-color:var(--red); background:var(--ng-bg);}
+  .choice.ng .mk{background:var(--red); color:#fff;}
+  .choice.dim{opacity:.6;}
+  .choice:disabled{cursor:default;}
+  .fb{border-radius:13px; padding:12px 14px; margin:4px 0 12px; font-size:14px; font-weight:600;}
+  .fb.ok{background:var(--ok-bg); color:var(--green-d);}
+  .fb.ng{background:var(--ng-bg); color:#9b1c1c;}
+  .fb .ttl{font-weight:800; display:block; margin-bottom:2px;}
+  .kids .qtext{font-size:20px;}
+  .kids .choice{font-size:17px;}
+  .result-score{text-align:center; padding:6px 0 2px;}
+  .result-score .big{font-size:46px; font-weight:900; line-height:1; color:var(--blue);}
+  .result-score .big small{font-size:20px; color:var(--muted); font-weight:800;}
+  .prize{border-radius:16px; padding:16px; text-align:center; margin:12px 0; color:#fff;}
+  .prize.top{background:linear-gradient(135deg,#f59e0b,#f97316);}
+  .prize.part{background:linear-gradient(135deg,#34a0ff,#1f6feb);}
+  .prize .lab{font-size:12px; font-weight:700; opacity:.95;}
+  .prize .name{font-size:24px; font-weight:900; margin-top:2px;}
+  .prize .emj{font-size:30px;}
+  .staff{font-size:12px; color:var(--muted); text-align:center; margin-top:-4px;}
+  .cta{background:#f0f6ff; border:1px solid #d6e6ff; border-radius:16px; padding:14px; margin-top:6px;}
+  .cta h3{margin:0 0 8px; font-size:15px;}
+  .cta ul{margin:0; padding-left:18px; font-size:13.5px; color:#334155;}
+  .cta li{margin:4px 0;}
+  footer.app{margin-top:auto; padding-top:14px; text-align:center; font-size:11.5px; color:var(--muted);}
+  footer.app a{color:var(--muted);}
+  .admin h2{margin-top:0;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{border-bottom:1px solid var(--line); padding:7px 6px; text-align:left; vertical-align:top;}
+  th{color:var(--muted); font-weight:700; font-size:11.5px;}
+  td.num,th.num{text-align:right; white-space:nowrap;}
+  .bar{height:7px; background:#eef2f9; border-radius:999px; overflow:hidden; margin-top:3px;}
+  .bar > i{display:block; height:100%; background:var(--blue);}
+  .bar.low > i{background:var(--red);} .bar.mid > i{background:var(--amber);} .bar.high > i{background:var(--green);}
+  .kpis{display:flex; gap:8px; flex-wrap:wrap;}
+  .kpi{flex:1; min-width:90px; background:#f6f8fc; border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+  .kpi .v{font-size:22px; font-weight:900;}
+  .kpi .k{font-size:11px; color:var(--muted);}
+  .setblock{margin:12px 0 4px;}
+  .setblock h3{font-size:14px; margin:0 0 4px; display:flex; gap:8px; align-items:center;}
+  .banner{background:#fff7e6; border:1px solid #ffe2a8; color:#7a5200; border-radius:12px; padding:10px 12px; font-size:12.5px; margin-bottom:12px;}
+  details.help{margin-top:8px;} details.help summary{cursor:pointer; font-size:13px; font-weight:700; color:var(--blue-d);}
+  .hint{font-size:12px; color:var(--muted); margin-top:6px;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .link{background:none; border:none; color:var(--muted); font-size:12px; cursor:pointer; font-family:inherit; text-decoration:underline; padding:0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app">
+    <div class="ev" id="evName">大人の文化祭2026</div>
+    <h1>デジタル安心クイズ 🛡️🤖</h1>
+    <div class="sub" id="evSub">クイズに答えて景品をGET！ ｜ 個人情報は取得しません</div>
+  </header>
+
+  <div id="app" aria-live="polite"></div>
+
+  <footer class="app">
+    <div>このアプリはインターネットに接続せず端末内で動作します（オフライン対応）。</div>
+    <div style="margin-top:4px;">個人情報は一切取得・送信しません。</div>
+    <div style="margin-top:6px;"><button class="link" data-action="admin">スタッフ用 集計画面</button></div>
+  </footer>
+</div>
+
+<input type="file" id="importFile" accept="application/json,.json" multiple hidden />
+
+<script>
+/* ============================================================
+   設定（ここを編集すれば挙動を変えられます）
+   ============================================================ */
+const CONFIG = {
+  // 景品の判定：satisfthreshold 問以上正解で「上位賞」
+  prizeThreshold: 6,            // 7問中6問以上で上位賞（変更可）
+  topPrize:        "Google Home Mini",
+  topPrizeEmoji:   "🔊",
+  partPrize:       "デポちゃんメガネ",
+  partPrizeEmoji:  "👓",
+
+  eventName: "大人の文化祭2026",
+  eventSub:  "クイズに答えて景品をGET！ ｜ 個人情報は取得しません",
+
+  // 結果画面でご案内する講習・来場情報（日時会場は適宜書き換えてください）
+  cta: {
+    title: "📣 もっと安心・便利に！次の一歩のご案内",
+    items: [
+      "「デジタル安全運転」講習 … ネット詐欺・パスワード・スマホの守り方を学べます",
+      "「生成AI 安全活用」講習 … AIを安心して暮らしや仕事に活かすコツを学べます",
+      "詳しい日時・お申し込みはブースのスタッフまでお気軽に！",
+      "店舗・施設へのご来場も歓迎です 😊"
+    ]
+  },
+
+  // ★オンライン集計の送信先（Googleスプレッドシート連携のURL）
+  //   「Googleスプレッドシート連携_手順.md」の手順で発行した /exec のURLを貼り付けてください。
+  //   空のままなら送信は行わず、端末内保存のみで動作します（オフライン運用）。
+  //   送信内容は匿名のクイズ結果のみ（個人情報は一切含みません）。
+  submitUrl: "https://script.google.com/macros/s/AKfycbzqgXnJ5lx1dRqL-qPbOCc20O2o3MTa8pt0tBzn7YBPrhoPY1PRSvA6oHQh27wD95sH/exec",
+
+  storeKey: "otona_bunkasai_2026_quiz_v1",   // 保存先キー
+  adminPin: ""   // 集計画面に簡易PINをかけたい場合は文字列を設定（例 "2026"）。空なら無し
+};
+
+/* ============================================================
+   クイズデータ
+   ・カテゴリ: safety（デジタル安全運行編） / ai（生成AI安全活用編）
+   ・難易度  : kids（こども） / normal（ふつう） / hard（むずかしい）
+   ・各7問。answer は choices の正解インデックス（0始まり）
+   ・問題を増減・修正する場合はこの配列を編集してください
+   ============================================================ */
+const QUIZ_DATA = {
+  safety: {
+    label: "デジタル安全運行編", emoji: "🛡️",
+    kids: [
+      {q:"しらない人から「とくべつなプレゼントがあたりました！」というメッセージが来ました。どうする？",
+       choices:["リンクをすぐにタップする","おうちの人に相談する","じぶんの名前と住所をおくる"], answer:1,
+       explain:"知らない人からのうますぎる話はあぶないよ。まずはおうちの人に相談しよう。"},
+      {q:"ゲームやアプリのパスワードは、どうするのがいい？",
+       choices:["お友だちに教える","だれにも教えない","ノートに大きく書いて学校に持っていく"], answer:1,
+       explain:"パスワードは自分だけのカギ。だれにも教えないでね。"},
+      {q:"インターネットで友だちになった人が「会おう」とさそってきた。どうする？",
+       choices:["ひとりで会いに行く","おうちの人に話す","待ち合わせ場所を教える"], answer:1,
+       explain:"ネットで知り合った人と勝手に会うのはとてもあぶないよ。"},
+      {q:"友だちのいやがる写真を、かってにインターネットにのせてもいい？",
+       choices:["いい","だめ","おもしろければいい"], answer:1,
+       explain:"人がいやがる写真を勝手にのせてはいけません。"},
+      {q:"ゲームの中でおかね（課金）を使いたいとき、どうする？",
+       choices:["こっそり使う","おうちの人に聞いてからにする","友だちのお金を使う"], answer:1,
+       explain:"お金を使うときは、かならずおうちの人に相談しよう。"},
+      {q:"インターネットを使っていて「こわい」「へんだな」と思ったら？",
+       choices:["だまっている","すぐに大人に教える","もっと見てみる"], answer:1,
+       explain:"こわい・へんだなと思ったら、すぐ大人につたえよう。"},
+      {q:"知らないメールについている「ファイル」や「リンク」は、どうする？",
+       choices:["すぐ開く","開かないで大人に聞く","ぜんぶ開いてみる"], answer:1,
+       explain:"知らないメールのファイルやリンクはウイルスかも。開かずに大人に聞こうね。"}
+    ],
+    normal: [
+      {q:"「お荷物のお届けにあがりましたが不在のため持ち帰りました。確認はこちら→（URL）」というSMSが届いた。最も適切な対応は？",
+       choices:["リンクを開いて住所などを入力する","リンクは開かず、公式アプリや公式サイトで確認する","記載の電話番号にすぐかけ直す"], answer:1,
+       explain:"宅配業者をかたるSMS（スミッシング）の典型例。リンクは開かず、公式アプリ等の正規ルートで確認しましょう。"},
+      {q:"安全性の高いパスワードの作り方として適切なのは？",
+       choices:["誕生日や名前を使う","長く、英大文字・小文字・数字・記号を混ぜ、使い回さない","すべてのサービスで同じものにする"], answer:1,
+       explain:"使い回しは一つ漏れると全部が危険に。長く複雑で、サービスごとに変えるのが基本です。"},
+      {q:"公共のフリーWi-Fiを使うとき注意すべきことは？",
+       choices:["どんな通信でも安全","ネットバンキングなど重要情報の入力は避ける","パスワード付きなら何でも安全"], answer:1,
+       explain:"暗号化されていない・なりすましWi-Fiの恐れがあります。重要情報の入力は避けましょう。"},
+      {q:"「不正アクセスがありました。今すぐパスワードを確認してください」というメールが来た。適切な対応は？",
+       choices:["メール内のリンクからログインする","リンクは使わず、ブックマークや公式アプリから確認する","パスワードを返信メールで送る"], answer:1,
+       explain:"フィッシングの可能性大。メールのリンクからではなく、自分で公式サイト・アプリにアクセスしましょう。"},
+      {q:"二段階認証（2要素認証）とは？",
+       choices:["パスワードを2つ設定すること","パスワードに加え、スマホのコードなど別の確認を足す仕組み","パスワードを2回入力すること"], answer:1,
+       explain:"パスワードが漏れても、もう一つの確認で不正ログインを防げます。できる設定はオンにしましょう。"},
+      {q:"SNSに投稿するときに気をつけることは？",
+       choices:["自宅がわかる写真や位置情報も自由に載せる","個人や居場所が特定される情報は載せない","リアルタイムで居場所を常に公開する"], answer:1,
+       explain:"写真の背景や位置情報から自宅・行動が特定される危険があります。公開範囲にも注意を。"},
+      {q:"アプリやソフトの「アップデート（更新）」通知が来た。適切なのは？",
+       choices:["ずっと無視する","公式のものは早めに更新する","提供元不明のサイトから入手して更新する"], answer:1,
+       explain:"更新は弱点（脆弱性）を直す大事な対策。ただし入手は必ず公式から行いましょう。"}
+    ],
+    hard: [
+      {q:"フィッシング詐欺を見破るために最も有効な確認点は？",
+       choices:["送信者の表示名だけを見る","リンク先のドメイン（URL）が正規のものか確認する","文面が自然な日本語かだけで判断する"], answer:1,
+       explain:"表示名や文面は偽装できます。実際のドメイン（URL）を確認するのが有効です。"},
+      {q:"ランサムウェア被害を最小化する備えとして最も有効なのは？",
+       choices:["重要データを定期的にオフライン／別媒体にバックアップする","パスワードを長くする","ウイルス対策ソフトを削除する"], answer:0,
+       explain:"暗号化されても、隔離されたバックアップがあれば復旧の決め手になります。"},
+      {q:"公衆Wi-Fi利用時に通信を保護する手段として適切なのは？",
+       choices:["暗号化なしのHTTPサイトを使う","信頼できるVPNを使い通信を暗号化する","位置情報をオンにする"], answer:1,
+       explain:"信頼できるVPNで通信を暗号化すれば、盗聴のリスクを下げられます。"},
+      {q:"「サポート詐欺（偽の警告画面）」で警告音と電話番号が表示された。適切な対応は？",
+       choices:["表示された番号に電話する","電話せずブラウザを閉じ／再起動し、必要なら正規サポートに相談する","表示どおり遠隔操作ソフトを入れる"], answer:1,
+       explain:"警告は偽物です。電話・遠隔操作・支払いには応じないこと。落ち着いて画面を閉じましょう。"},
+      {q:"パスワード管理として最も推奨される方法は？",
+       choices:["紙に全部書いて机に貼る","パスワード管理ソフトで強固な固有パスワードを生成・保管する","覚えやすいよう全サービス共通にする"], answer:1,
+       explain:"管理ツールを使えば、使い回しを避けつつ強力な固有パスワードを安全に保管できます。"},
+      {q:"個人情報が入ったスマホ／PCを処分する際に適切なのは？",
+       choices:["そのままゴミに出す","データを確実に消去（初期化・暗号化消去）してから処分する","電源を切るだけで処分する"], answer:1,
+       explain:"初期化や暗号化消去をしないとデータ復元の恐れがあります。確実に消去してから処分を。"},
+      {q:"身に覚えのないリンク付きSMSが届いた。最も適切な確認方法は？",
+       choices:["送られてきたリンクを直接タップして中身を確認する","公式アプリや公式サイトをブックマークから開いて状況を確認する","とりあえず記載の電話番号にかけてみる"], answer:1,
+       explain:"リンクは開かないのが鉄則。確認は公式アプリ・ブックマークなど正規ルートで行いましょう。"}
+    ]
+  },
+  ai: {
+    label: "生成AI 安全活用編", emoji: "🤖",
+    kids: [
+      {q:"AI（エーアイ）にしつもんすると答えてくれるよ。その答えは？",
+       choices:["ぜったいに全部正しい","まちがっていることもある","うそしか言わない"], answer:1,
+       explain:"AIはべんりだけど、まちがえることもあるよ。たしかめが大事だね。"},
+      {q:"AIにじぶんの名前・住所・電話ばんごうを教えてもいい？",
+       choices:["いい","教えない方がいい","友だちのも教える"], answer:1,
+       explain:"大事な個人情報は、AIにも入力しないようにしようね。"},
+      {q:"学校のしゅくだいをAIに「ぜんぶやって」とたのんで、そのまま出すのは？",
+       choices:["とてもいいこと","自分で考える力がつかないからよくない","先生にほめられる"], answer:1,
+       explain:"AIは手伝い役。自分で考えることがいちばん大切だよ。"},
+      {q:"AIが作った文しょうや絵は、ほんとうかどうか？",
+       choices:["ぜんぶほんとう","ほんとうか自分でもたしかめる","たしかめなくていい"], answer:1,
+       explain:"AIが作ったものは、正しいかどうか自分でも確かめよう。"},
+      {q:"AIとお話していて、こわい言葉や悪い言葉が出てきたら？",
+       choices:["まねをする","大人に教える","友だちに送る"], answer:1,
+       explain:"へんだな・こわいなと思ったら、大人に相談しようね。"},
+      {q:"AIに「ほかの人の悪口を考えて」とたのむのは？",
+       choices:["おもしろいからいい","だめ","みんなでやればいい"], answer:1,
+       explain:"人をきずつけることに、AIを使ってはいけません。"},
+      {q:"AIはどんなときに使うと、楽しく・べんり？",
+       choices:["人をだますとき","調べものやアイデア出しのお手伝い","パスワードをぬすむとき"], answer:1,
+       explain:"勉強やアイデアのお手伝いに使うとべんりだよ。やさしい使い方をしよう。"}
+    ],
+    normal: [
+      {q:"生成AIの回答について、正しい理解はどれ？",
+       choices:["常に最新かつ正確である","もっともらしい誤り（ハルシネーション）が含まれることがある","出典は常に正確"], answer:1,
+       explain:"AIは事実と異なる内容を自信ありげに出すことがあります。重要な情報は必ず確認を。"},
+      {q:"生成AIに入力してはいけない情報として最も適切なのは？",
+       choices:["一般的な料理レシピの質問","会社の機密情報や他人の個人情報","今日の天気の質問"], answer:1,
+       explain:"機密情報や個人情報の入力は漏えいリスクに。入力しないのが基本です。"},
+      {q:"生成AIが作った文章をそのまま公開・提出する前にすべきことは？",
+       choices:["何もしない","内容の事実確認と、自分の責任での見直し","出典を消す"], answer:1,
+       explain:"最終的な責任は使う人にあります。事実確認と推敲をしてから使いましょう。"},
+      {q:"生成AIに画像や文章を作らせるとき、著作権について適切な考え方は？",
+       choices:["他人の作品をそのまま再現させて販売してよい","第三者の権利を侵害しないよう注意して使う","著作権は一切関係ない"], answer:1,
+       explain:"生成物が他者の権利を侵害する場合があります。利用には配慮が必要です。"},
+      {q:"生成AIサービスを使うときのプライバシー上の注意は？",
+       choices:["何を入力しても問題ない","入力内容が保存・学習に使われる場合があると理解して使う","個人情報を積極的に入力する"], answer:1,
+       explain:"サービスにより入力が保存・利用される場合があります。設定と入力内容に注意を。"},
+      {q:"「AIが言ったから正しい」と鵜呑みにするのは？",
+       choices:["効率的でよい","誤情報を広めるおそれがあり避けるべき","確認の手間が省けてよい"], answer:1,
+       explain:"根拠を確かめず鵜呑みにするのは危険。情報源の確認を習慣にしましょう。"},
+      {q:"生成AIを上手に使うコツとして適切なのは？",
+       choices:["あいまいな指示だけ出す","目的・条件を具体的に伝え、結果を確認・修正する","結果は一切確認しない"], answer:1,
+       explain:"具体的な指示と、確認・修正の繰り返しが良い結果につながります。"}
+    ],
+    hard: [
+      {q:"「ハルシネーション」への対策として最も適切なのは？",
+       choices:["AIの回答をそのまま信用する","一次情報・公式情報で裏取り（ファクトチェック）する","出典を確認しない"], answer:1,
+       explain:"生成AIの誤りは、信頼できる情報源での裏取りでリスクを減らせます。"},
+      {q:"業務で生成AIを使う際の情報管理として適切なのは？",
+       choices:["顧客情報や社外秘を自由に入力する","機密情報の入力可否や利用範囲を社内ルールに従って判断する","ルールは気にしない"], answer:1,
+       explain:"情報漏えい・コンプライアンスの観点から、社内ルールに沿った利用が必須です。"},
+      {q:"プロンプトインジェクションとは何か？",
+       choices:["AIの回答速度を上げる技術","悪意ある指示を紛れ込ませてAIの動作を乗っ取る攻撃","画像を生成する機能"], answer:1,
+       explain:"外部データ等に仕込まれた不正な指示でAIを誤動作させる攻撃手法です。"},
+      {q:"生成AIの出力を業務文書に使う場合の責任の考え方は？",
+       choices:["生成物なら何の確認も不要","権利侵害や正確性のリスクを確認し、利用者が責任を持つ","すべてAI提供会社の責任になる"], answer:1,
+       explain:"最終的な利用責任は利用者側にあります。権利・正確性の確認をしましょう。"},
+      {q:"ディープフェイクや生成コンテンツによる偽情報への向き合い方として適切なのは？",
+       choices:["動画や音声は本物だと信じる","発信元や複数の情報源を確認し、安易に拡散しない","すぐにシェアして広める"], answer:1,
+       explain:"精巧な偽コンテンツが増えています。出所の確認と、拡散の慎重さが重要です。"},
+      {q:"個人情報保護の観点で、生成AIに入力する前にすべき工夫は？",
+       choices:["実名や具体的な個人情報をそのまま入力する","不要な個人情報は削除・匿名化してから入力する","すべての情報を詳細に入力する"], answer:1,
+       explain:"匿名化・最小化することで、漏えいのリスクを下げられます。"},
+      {q:"生成AIを安全・有効に活用する組織の姿勢として最も適切なのは？",
+       choices:["全面禁止にして一切触れさせない","利用ガイドラインと教育を整え、リスク管理のうえ活用する","ルールなしで自由に使わせる"], answer:1,
+       explain:"禁止でも放任でもなく、ルール整備と教育による適切な活用が望ましい姿です。"}
+    ]
+  }
+};
+
+const DIFFS = ["kids","normal","hard"];
+const DIFF_LABEL = {kids:"こども（小学生）", normal:"ふつう", hard:"むずかしい"};
+const DIFF_SUB   = {kids:"やさしい言葉で出題します", normal:"大人向けの基本", hard:"知識をしっかりチェック"};
+const CAT_LABEL  = {safety:"デジタル安全運行編", ai:"生成AI 安全活用編"};
+
+/* ============================================================
+   状態・ユーティリティ
+   ============================================================ */
+let state = {view:"home", category:null, difficulty:null, qIndex:0, answers:[], locked:false, saved:false};
+let adminMerged = null; // 集計合算（取り込み）用。null ならこの端末のデータのみ
+
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function loadAll(){ try{ return JSON.parse(localStorage.getItem(CONFIG.storeKey)) || []; }catch(e){ return []; } }
+function saveAll(arr){ try{ localStorage.setItem(CONFIG.storeKey, JSON.stringify(arr)); }catch(e){ alert("保存容量がいっぱいです。集計画面からデータを書き出して消去してください。"); } }
+function deviceLabel(){ return localStorage.getItem(CONFIG.storeKey+"_device") || ""; }
+function setDeviceLabel(v){ localStorage.setItem(CONFIG.storeKey+"_device", v||""); }
+function newId(){ return Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8); }
+
+/* ---- オンライン送信＋オフライン退避（テザリングが切れてもデータを失わない） ---- */
+function queueLoad(){ try{ return JSON.parse(localStorage.getItem(CONFIG.storeKey+"_queue"))||[]; }catch(e){ return []; } }
+function queueSave(q){ try{ localStorage.setItem(CONFIG.storeKey+"_queue", JSON.stringify(q)); }catch(e){} }
+// 1件をスプレッドシートへ送信。失敗（圏外等）なら端末内のキューに退避
+function sendResult(resp){
+  if(!CONFIG.submitUrl) return;                       // 送信先未設定ならローカル保存のみ
+  fetch(CONFIG.submitUrl, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(resp)})
+    .catch(()=>{ const q=queueLoad(); q.push(resp); queueSave(q); });
+}
+// 退避分をまとめて再送信（オンライン復帰時・起動時・手動）
+function flushQueue(){
+  if(!CONFIG.submitUrl) return;
+  const items=queueLoad(); if(!items.length) return;
+  let remaining=items.length, failed=[];
+  items.forEach(it=>{
+    fetch(CONFIG.submitUrl, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(it)})
+      .catch(()=>{ failed.push(it); })
+      .finally(()=>{ if(--remaining===0){ queueSave(failed); if(location.hash==="#admin") render(); } });
+  });
+}
+
+function goHome(){ state={view:"home",category:null,difficulty:null,qIndex:0,answers:[],locked:false,saved:false}; if(location.hash) history.replaceState(null,"","#"); render(); }
+
+/* ============================================================
+   画面描画
+   ============================================================ */
+function render(){
+  document.getElementById("evName").textContent = CONFIG.eventName;
+  document.getElementById("evSub").textContent  = CONFIG.eventSub;
+
+  if(location.hash === "#admin"){ renderAdmin(); return; }
+  switch(state.view){
+    case "home":       renderHome(); break;
+    case "category":   renderCategory(); break;
+    case "difficulty": renderDifficulty(); break;
+    case "quiz":       renderQuiz(); break;
+    case "result":     renderResult(); break;
+    default:           renderHome();
+  }
+  window.scrollTo(0,0);
+}
+
+function renderHome(){
+  app.innerHTML = `
+    <div class="card">
+      <h2>ようこそ！🎉</h2>
+      <p class="lead">スマホで楽しく学べる <b>デジタル安心クイズ</b> です。全${QUIZ_DATA.safety.normal.length}問に答えると、結果に応じて景品をお渡しします。</p>
+      <button class="btn lg" data-action="toCategory"><span class="emj">▶️</span><span class="col">クイズをはじめる<span class="meta">所要 2〜3分 ｜ 個人情報は不要</span></span></button>
+      <div class="note" style="margin-top:12px;">🎁 景品：${CONFIG.prizeThreshold}問以上正解で <b>${esc(CONFIG.topPrize)}</b>、それ以外の方には <b>${esc(CONFIG.partPrize)}</b> ｜ 参加者全員に景品があります。</div>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 8px; font-size:14px;">出題ジャンル</h3>
+      <div class="row" style="gap:10px;">
+        <div class="kpi"><div class="v">🛡️</div><div class="k">デジタル安全運行編</div></div>
+        <div class="kpi"><div class="v">🤖</div><div class="k">生成AI 安全活用編</div></div>
+      </div>
+      <div class="hint">むずかしさは「こども／ふつう／むずかしい」から選べます。</div>
+    </div>`;
+}
+
+function renderCategory(){
+  app.innerHTML = `
+    <div class="topbar"><button class="btn ghost" style="width:auto;padding:8px 14px;font-size:14px;" data-action="home">← もどる</button><span class="pill">ジャンルをえらぶ</span></div>
+    <div class="card">
+      <h2>どちらに挑戦しますか？</h2>
+      <button class="btn lg" data-action="selectCategory" data-value="safety"><span class="emj">🛡️</span><span class="col">デジタル安全運行編<span class="meta">ネット詐欺・パスワード・スマホの守り方</span></span></button>
+      <div style="height:10px;"></div>
+      <button class="btn lg purple" data-action="selectCategory" data-value="ai"><span class="emj">🤖</span><span class="col">生成AI 安全活用編<span class="meta">AIを安心して使うための知識</span></span></button>
+    </div>`;
+}
+
+function renderDifficulty(){
+  const cat = state.category;
+  const colors = {kids:"green", normal:"", hard:"purple"};
+  let btns = DIFFS.map(d=>`
+    <button class="btn lg ${colors[d]}" data-action="selectDifficulty" data-value="${d}">
+      <span class="emj">${d==="kids"?"🧒":d==="normal"?"🙂":"🧠"}</span>
+      <span class="col">${DIFF_LABEL[d]}<span class="meta">${DIFF_SUB[d]}</span></span>
+    </button><div style="height:10px;"></div>`).join("");
+  app.innerHTML = `
+    <div class="topbar"><button class="btn ghost" style="width:auto;padding:8px 14px;font-size:14px;" data-action="toCategory">← もどる</button><span class="pill ${cat}">${QUIZ_DATA[cat].emoji} ${esc(CAT_LABEL[cat])}</span></div>
+    <div class="card">
+      <h2>むずかしさをえらんでね</h2>
+      ${btns}
+    </div>`;
+}
+
+function renderQuiz(){
+  const cat=state.category, diff=state.difficulty;
+  const qs=QUIZ_DATA[cat][diff], total=qs.length;
+  const q=qs[state.qIndex];
+  const ans=state.answers[state.qIndex];
+  const pct=Math.round((state.qIndex+(state.locked?1:0))/total*100);
+  const marks=["ア","イ","ウ","エ","オ"];
+  let choices = q.choices.map((c,i)=>{
+    let cls="choice"; let disabled="";
+    if(state.locked){
+      disabled="disabled";
+      if(i===q.answer) cls+=" ok";
+      else if(ans && i===ans.chosen) cls+=" ng";
+      else cls+=" dim";
+    }
+    return `<button class="${cls}" ${disabled} data-action="choose" data-value="${i}"><span class="mk">${marks[i]||(i+1)}</span><span>${esc(c)}</span></button>`;
+  }).join("");
+  let feedback="";
+  if(state.locked){
+    const ok=ans && ans.correct;
+    feedback=`<div class="fb ${ok?"ok":"ng"}"><span class="ttl">${ok?"⭕ 正解！":"❌ 残念…"}</span>${esc(q.explain)}</div>
+      <button class="btn ${ok?"green":""}" data-action="next">${state.qIndex<total-1?"次の問題へ ▶":"結果を見る 🎁"}</button>`;
+  }
+  app.innerHTML = `
+    <div class="card ${diff}">
+      <div class="qhead"><span class="pill ${cat}">${QUIZ_DATA[cat].emoji} ${esc(CAT_LABEL[cat])} / ${DIFF_LABEL[diff]}</span><span>第 ${state.qIndex+1} 問 / ${total}</span></div>
+      <div class="progress"><i style="width:${pct}%"></i></div>
+      <div class="qtext">${esc(q.q)}</div>
+      ${choices}
+      ${feedback}
+    </div>
+    ${!state.locked?'<div class="hint">こたえを1つタップしてください。</div>':''}`;
+}
+
+function renderResult(){
+  const cat=state.category, diff=state.difficulty;
+  const qs=QUIZ_DATA[cat][diff], total=qs.length;
+  const score=state.answers.filter(a=>a&&a.correct).length;
+  const isTop = score>=CONFIG.prizeThreshold;
+  const prizeName = isTop?CONFIG.topPrize:CONFIG.partPrize;
+  const prizeEmoji= isTop?CONFIG.topPrizeEmoji:CONFIG.partPrizeEmoji;
+  const ctaItems = CONFIG.cta.items.map(i=>`<li>${esc(i)}</li>`).join("");
+  app.innerHTML = `
+    <div class="card">
+      <h2 style="text-align:center;">クイズ結果 🎊</h2>
+      <div class="result-score"><span class="big">${score}<small> / ${total} 問正解</small></span></div>
+      <div class="pill ${cat}" style="display:block;text-align:center;margin:10px auto 0;width:max-content;">${QUIZ_DATA[cat].emoji} ${esc(CAT_LABEL[cat])} / ${DIFF_LABEL[diff]}</div>
+      <div class="prize ${isTop?"top":"part"}">
+        <div class="emj">${prizeEmoji}</div>
+        <div class="lab">${isTop?"おめでとうございます！上位賞":"ご参加賞"}</div>
+        <div class="name">${esc(prizeName)}</div>
+      </div>
+      <div class="staff">▲ この画面をブースのスタッフにお見せください（景品とお引換え）</div>
+    </div>
+    <div class="card">
+      <div class="cta">
+        <h3>${esc(CONFIG.cta.title)}</h3>
+        <ul>${ctaItems}</ul>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn ghost" data-action="restart">🏠 最初にもどる</button>
+      <button class="btn" data-action="retrySame">🔁 もう一度</button>
+    </div>`;
+}
+
+/* ============================================================
+   クイズ進行
+   ============================================================ */
+function startQuiz(cat,diff){
+  state.category=cat; state.difficulty=diff; state.qIndex=0; state.answers=[]; state.locked=false; state.saved=false; state.view="quiz";
+  render();
+}
+function choose(i){
+  if(state.locked) return;
+  const q=QUIZ_DATA[state.category][state.difficulty][state.qIndex];
+  state.answers[state.qIndex]={chosen:i, correct:i===q.answer};
+  state.locked=true; render();
+}
+function next(){
+  const qs=QUIZ_DATA[state.category][state.difficulty];
+  if(state.qIndex<qs.length-1){ state.qIndex++; state.locked=false; render(); }
+  else finish();
+}
+function finish(){
+  if(!state.saved){
+    const qs=QUIZ_DATA[state.category][state.difficulty];
+    const score=state.answers.filter(a=>a&&a.correct).length;
+    const resp={
+      id:newId(), ts:new Date().toISOString(), device:deviceLabel(),
+      category:state.category, difficulty:state.difficulty,
+      total:qs.length, score:score,
+      prize: score>=CONFIG.prizeThreshold?"top":"part",
+      answers: state.answers.map((a,i)=>({n:i, chosen:a?a.chosen:-1, correct:a?!!a.correct:false}))
+    };
+    const all=loadAll(); all.push(resp); saveAll(all);   // 端末内に控えを保存（バックアップ）
+    sendResult(resp);                                    // スプレッドシートへ自動送信（失敗時は退避）
+    state.saved=true;
+  }
+  state.view="result"; render();
+}
+
+/* ============================================================
+   集計（スタッフ用）
+   ============================================================ */
+function aggregate(data){
+  const out={total:data.length, bySet:{}, perQ:{}, scoreDist:{}, prize:{top:0,part:0}, byDevice:{}};
+  data.forEach(r=>{
+    const sk=r.category+"|"+r.difficulty;
+    out.bySet[sk]=(out.bySet[sk]||0)+1;
+    out.prize[r.prize]=(out.prize[r.prize]||0)+1;
+    out.scoreDist[r.score]=(out.scoreDist[r.score]||0)+1;
+    const dev=r.device||"(未設定)"; out.byDevice[dev]=(out.byDevice[dev]||0)+1;
+    (r.answers||[]).forEach(a=>{
+      const qk=r.category+"|"+r.difficulty+"|"+a.n;
+      if(!out.perQ[qk]) out.perQ[qk]={answered:0,correct:0};
+      out.perQ[qk].answered++; if(a.correct) out.perQ[qk].correct++;
+    });
+  });
+  return out;
+}
+function currentData(){
+  if(adminMerged) return adminMerged;
+  return loadAll();
+}
+function rateClass(p){ return p<50?"low":p<80?"mid":"high"; }
+
+function renderAdmin(){
+  if(CONFIG.adminPin){
+    const ok=sessionStorage.getItem(CONFIG.storeKey+"_pinok");
+    if(!ok){
+      const v=prompt("スタッフ用PINを入力してください");
+      if(v!==CONFIG.adminPin){ alert("PINが違います"); location.hash=""; goHome(); return; }
+      sessionStorage.setItem(CONFIG.storeKey+"_pinok","1");
+    }
+  }
+  const data=currentData();
+  const ag=aggregate(data);
+  const dev=deviceLabel();
+  const queued=queueLoad().length;
+  const sendSet=!!CONFIG.submitUrl;
+
+  let perQHtml="";
+  Object.keys(QUIZ_DATA).forEach(cat=>{
+    DIFFS.forEach(diff=>{
+      const qs=QUIZ_DATA[cat][diff];
+      const setCount=ag.bySet[cat+"|"+diff]||0;
+      let rows="";
+      qs.forEach((q,n)=>{
+        const s=ag.perQ[cat+"|"+diff+"|"+n];
+        const answered=s?s.answered:0, correct=s?s.correct:0;
+        const rate=answered? Math.round(correct/answered*1000)/10 : 0;
+        rows+=`<tr><td>Q${n+1}. ${esc(q.q)}</td><td class="num">${correct}/${answered}</td>
+          <td style="width:90px;"><b>${answered?rate+"%":"-"}</b><div class="bar ${rateClass(rate)}"><i style="width:${answered?rate:0}%"></i></div></td></tr>`;
+      });
+      perQHtml+=`<div class="setblock"><h3><span class="pill ${cat}">${QUIZ_DATA[cat].emoji}</span> ${esc(CAT_LABEL[cat])} / ${DIFF_LABEL[diff]} <span class="pill">回答 ${setCount}件</span></h3>
+        <table><thead><tr><th>設問</th><th class="num">正解/回答</th><th>正解率</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    });
+  });
+
+  let scoreRows="";
+  for(let s=0;s<=7;s++){ if(ag.scoreDist[s]) scoreRows+=`<tr><td>${s}問正解</td><td class="num">${ag.scoreDist[s]}件</td></tr>`; }
+
+  let devRows="";
+  Object.keys(ag.byDevice).forEach(d=>{ devRows+=`<tr><td>${esc(d)}</td><td class="num">${ag.byDevice[d]}件</td></tr>`; });
+
+  app.innerHTML = `
+    <div class="card admin">
+      <div class="topbar"><h2>📊 集計（スタッフ用）</h2><button class="btn ghost" style="width:auto;padding:8px 14px;font-size:14px;" data-action="home">クイズへ戻る</button></div>
+      ${adminMerged?`<div class="banner">📥 取り込み合算データを表示中（合計 ${data.length}件）。この端末の保存データには影響しません。<button class="link" data-action="resetMerge" style="margin-left:6px;">この端末のみに戻す</button></div>`:""}
+      <div class="kpis">
+        <div class="kpi"><div class="v">${ag.total}</div><div class="k">回答 合計件数</div></div>
+        <div class="kpi"><div class="v">${ag.prize.top||0}</div><div class="k">上位賞（${esc(CONFIG.topPrize)}）</div></div>
+        <div class="kpi"><div class="v">${ag.prize.part||0}</div><div class="k">参加賞（${esc(CONFIG.partPrize)}）</div></div>
+      </div>
+      <div style="margin-top:12px;">
+        <div class="row" style="flex-wrap:wrap;">
+          <button class="btn" style="font-size:14px;" data-action="csvResp">📄 回答CSV</button>
+          <button class="btn green" style="font-size:14px;" data-action="csvSummary">📈 設問別CSV</button>
+        </div>
+        <div style="height:10px;"></div>
+        <div class="row" style="flex-wrap:wrap;">
+          <button class="btn ghost" style="font-size:14px;" data-action="exportJson">💾 バックアップ(JSON)</button>
+          <button class="btn amber" style="font-size:14px;" data-action="importJson">📥 他端末のJSONを合算</button>
+        </div>
+      </div>
+      <div class="note" style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span>☁️ オンライン送信：<b style="color:${sendSet?'var(--green-d)':'var(--red)'}">${sendSet?'設定済み':'未設定'}</b> ／ 未送信(退避)：<b>${queued}件</b></span>
+        ${sendSet
+          ? `<button class="btn" style="width:auto;padding:8px 12px;font-size:13px;" data-action="flushNow">📤 今すぐ送信</button>`
+          : `<span style="font-size:11.5px;">※連携手順のURLを CONFIG.submitUrl に設定すると有効化されます</span>`}
+      </div>
+    </div>
+
+    <div class="card admin">
+      <h3 style="margin-top:0;">設問ごとの正解率</h3>
+      ${perQHtml}
+    </div>
+
+    <div class="card admin">
+      <h3 style="margin-top:0;">得点の分布</h3>
+      <table><tbody>${scoreRows||'<tr><td colspan="2">データなし</td></tr>'}</tbody></table>
+      <h3>端末別の件数</h3>
+      <table><tbody>${devRows||'<tr><td colspan="2">データなし</td></tr>'}</tbody></table>
+    </div>
+
+    <div class="card admin">
+      <h3 style="margin-top:0;">この端末の設定</h3>
+      <label style="font-size:13px;color:var(--muted);">端末名（任意・集計の識別用。例：受付A）</label>
+      <div class="row" style="margin-top:6px;">
+        <input id="devInput" value="${esc(dev)}" placeholder="例：受付A" style="flex:1;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;" />
+        <button class="btn" style="width:auto;padding:12px 16px;" data-action="saveDevice">保存</button>
+      </div>
+      <details class="help"><summary>⚠️ データ消去（イベント前のテスト消去など）</summary>
+        <p class="hint">この端末に保存した回答データをすべて消します。元に戻せません。先に「バックアップ(JSON)」での書き出しをおすすめします。</p>
+        <button class="btn" style="background:var(--red);" data-action="clearData">この端末のデータを全消去</button>
+      </details>
+    </div>`;
+}
+
+/* ============================================================
+   CSV / JSON 入出力
+   ============================================================ */
+function csvCell(v){ const s=String(v==null?"":v); return '"'+s.replace(/"/g,'""')+'"'; }
+function download(filename, text, mime){
+  const blob=new Blob([text], {type:(mime||"text/plain")+";charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); },300);
+}
+function stamp(){ const d=new Date(); const p=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
+
+function exportResponsesCsv(){
+  const data=currentData();
+  const head=["ID","日時","端末","ジャンル","難易度","得点","満点","景品"];
+  for(let i=1;i<=7;i++) head.push("Q"+i+"正誤");
+  for(let i=1;i<=7;i++) head.push("Q"+i+"選択");
+  const rows=[head.map(csvCell).join(",")];
+  data.forEach(r=>{
+    const row=[r.id, r.ts, r.device||"", CAT_LABEL[r.category]||r.category, DIFF_LABEL[r.difficulty]||r.difficulty,
+               r.score, r.total, r.prize==="top"?CONFIG.topPrize:CONFIG.partPrize];
+    for(let i=0;i<7;i++){ const a=(r.answers||[]).find(x=>x.n===i); row.push(a?(a.correct?1:0):""); }
+    for(let i=0;i<7;i++){ const a=(r.answers||[]).find(x=>x.n===i); row.push(a?(a.chosen+1):""); }
+    rows.push(row.map(csvCell).join(","));
+  });
+  download(`回答データ_${stamp()}.csv`, "﻿"+rows.join("\r\n"), "text/csv");
+}
+function exportSummaryCsv(){
+  const data=currentData(); const ag=aggregate(data);
+  const rows=[["ジャンル","難易度","設問No","設問","回答数","正解数","正解率(%)"].map(csvCell).join(",")];
+  Object.keys(QUIZ_DATA).forEach(cat=>{
+    DIFFS.forEach(diff=>{
+      QUIZ_DATA[cat][diff].forEach((q,n)=>{
+        const s=ag.perQ[cat+"|"+diff+"|"+n]; const answered=s?s.answered:0, correct=s?s.correct:0;
+        const rate=answered? Math.round(correct/answered*1000)/10 : "";
+        rows.push([CAT_LABEL[cat], DIFF_LABEL[diff], "Q"+(n+1), q.q, answered, correct, rate].map(csvCell).join(","));
+      });
+    });
+  });
+  download(`設問別集計_${stamp()}.csv`, "﻿"+rows.join("\r\n"), "text/csv");
+}
+function exportJson(){
+  download(`バックアップ_${deviceLabel()||"端末"}_${stamp()}.json`, JSON.stringify(loadAll()), "application/json");
+}
+function importJson(files){
+  if(!files||!files.length) return;
+  let pending=files.length; let incoming=[];
+  Array.from(files).forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      try{ const arr=JSON.parse(r.result); if(Array.isArray(arr)) incoming=incoming.concat(arr); }catch(e){ alert(f.name+" を読み込めませんでした"); }
+      if(--pending===0){
+        const map=new Map();
+        (adminMerged||loadAll()).forEach(x=>x&&x.id&&map.set(x.id,x));
+        incoming.forEach(x=>x&&x.id&&map.set(x.id,x));
+        adminMerged=Array.from(map.values());
+        render();
+        alert("合算しました。現在 "+adminMerged.length+" 件を表示しています。");
+      }
+    };
+    r.readAsText(f);
+  });
+}
+
+/* ============================================================
+   イベント処理
+   ============================================================ */
+app.addEventListener("click", e=>{
+  const t=e.target.closest("[data-action]"); if(!t) return;
+  const a=t.dataset.action, v=t.dataset.value;
+  switch(a){
+    case "toCategory": state.view="category"; render(); break;
+    case "selectCategory": state.category=v; state.view="difficulty"; render(); break;
+    case "selectDifficulty": startQuiz(state.category, v); break;
+    case "choose": choose(parseInt(v,10)); break;
+    case "next": next(); break;
+    case "home": goHome(); break;
+    case "restart": goHome(); break;
+    case "retrySame": startQuiz(state.category, state.difficulty); break;
+    case "csvResp": exportResponsesCsv(); break;
+    case "csvSummary": exportSummaryCsv(); break;
+    case "exportJson": exportJson(); break;
+    case "importJson": document.getElementById("importFile").click(); break;
+    case "resetMerge": adminMerged=null; render(); break;
+    case "saveDevice": { const el=document.getElementById("devInput"); setDeviceLabel(el?el.value.trim():""); alert("端末名を保存しました"); render(); break; }
+    case "flushNow": flushQueue(); alert("未送信データの再送信を試みました。数秒後に『未送信(退避)』件数をご確認ください。"); setTimeout(render, 1200); break;
+    case "clearData": if(confirm("この端末の回答データをすべて消去します。よろしいですか？")){ saveAll([]); adminMerged=null; alert("消去しました"); render(); } break;
+  }
+});
+// フッターの「スタッフ用 集計画面」リンク（#app の外）
+document.addEventListener("click", e=>{
+  const t=e.target.closest('[data-action="admin"]');
+  if(t && !app.contains(t)){ location.hash="#admin"; }
+});
+document.getElementById("importFile").addEventListener("change", e=>{ importJson(e.target.files); e.target.value=""; });
+window.addEventListener("hashchange", render);
+
+/* ============================================================
+   オフライン対応（Service Worker 登録）
+   ※ http/https で配信したときのみ有効。file:// では無効でも動作します
+   ============================================================ */
+if("serviceWorker" in navigator && (location.protocol==="https:"||location.protocol==="http:")){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+
+// 退避した未送信データを、オンライン復帰時・起動時に自動再送
+window.addEventListener("online", flushQueue);
+window.addEventListener("load", flushQueue);
+
+render();
+</script>
+</body>
+</html>
