@@ -363,7 +363,7 @@ function flushQueue(){
   });
 }
 
-function goHome(){ state={view:"home",category:null,difficulty:null,qIndex:0,answers:[],locked:false,saved:false}; if(location.hash) history.replaceState(null,"","#"); render(); }
+function goHome(){ state={view:"home",category:null,difficulty:null,qIndex:0,answers:[],locked:false,saved:false,shuffled:[]}; if(location.hash) history.replaceState(null,"","#"); render(); }
 
 /* ============================================================
    画面描画
@@ -431,8 +431,8 @@ function renderDifficulty(){
 
 function renderQuiz(){
   const cat=state.category, diff=state.difficulty;
-  const qs=QUIZ_DATA[cat][diff], total=qs.length;
-  const q=qs[state.qIndex];
+  const qs=state.shuffled, total=qs.length;
+  const q=currentQ();
   const ans=state.answers[state.qIndex];
   const pct=Math.round((state.qIndex+(state.locked?1:0))/total*100);
   const marks=["ア","イ","ウ","エ","オ"];
@@ -498,24 +498,41 @@ function renderResult(){
 /* ============================================================
    クイズ進行
    ============================================================ */
+
+// 選択肢をランダムに並べ替え、正解インデックスも更新して返す
+function shuffleQuestions(cat, diff){
+  return QUIZ_DATA[cat][diff].map(q=>{
+    const idx = [0,1,2];
+    // Fisher-Yates シャッフル
+    for(let i=idx.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [idx[i],idx[j]] = [idx[j],idx[i]];
+    }
+    const newChoices = idx.map(i=>q.choices[i]);
+    const newAnswer  = idx.indexOf(q.answer);
+    return {...q, choices:newChoices, answer:newAnswer};
+  });
+}
+
 function startQuiz(cat,diff){
   state.category=cat; state.difficulty=diff; state.qIndex=0; state.answers=[]; state.locked=false; state.saved=false; state.view="quiz";
+  state.shuffled = shuffleQuestions(cat, diff);   // ← 毎回シャッフル
   render();
 }
+function currentQ(){ return state.shuffled[state.qIndex]; }
 function choose(i){
   if(state.locked) return;
-  const q=QUIZ_DATA[state.category][state.difficulty][state.qIndex];
+  const q=currentQ();
   state.answers[state.qIndex]={chosen:i, correct:i===q.answer};
   state.locked=true; render();
 }
 function next(){
-  const qs=QUIZ_DATA[state.category][state.difficulty];
-  if(state.qIndex<qs.length-1){ state.qIndex++; state.locked=false; render(); }
+  if(state.qIndex<state.shuffled.length-1){ state.qIndex++; state.locked=false; render(); }
   else finish();
 }
 function finish(){
   if(!state.saved){
-    const qs=QUIZ_DATA[state.category][state.difficulty];
+    const qs=state.shuffled;
     const score=state.answers.filter(a=>a&&a.correct).length;
     const resp={
       id:newId(), ts:new Date().toISOString(), device:deviceLabel(),
